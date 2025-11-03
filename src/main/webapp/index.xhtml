@@ -4,12 +4,94 @@
       xmlns:p="http://primefaces.org/ui">
 
 <h:head>
-    <title>Teste</title>
+    <title>Dashboard - Gestão de Agendamentos</title>
+    <style type="text/css">
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .full-screen-center-wrapper {
+             /* Usaremos este estilo mais abaixo */
+             position: relative; 
+             min-height: 100vh;
+             display: flex;
+             justify-content: center;
+             align-items: center;
+        }
+    </style>
 </h:head>
 
-<h:body>
+<h:body style="background-color: lightgray;">
     
-    Olá, Teste!
+    <div style="min-height: 100vh; position: relative;">
+        
+        <p:panel header="Funcionalidades do Sistema" 
+                 style="position: absolute; 
+                        top: 50%; 
+                        left: 50%; 
+                        transform: translate(-50%, -50%); 
+                        width: 80%; 
+                        max-width: 1000px;
+                        margin: 0;"
+                 styleClass="p-shadow-5 p-p-4">
+            
+            <h:panelGrid columns="3" cellpadding="10" 
+                         style="width: 100%; margin-top: 20px;" 
+                         columnClasses="p-col-4, p-col-4, p-col-4">
+                
+                <p:outputLabel value="Navegação Principal" 
+                               style="font-size: 1.5em; font-weight: bold; color: var(--text-color);"
+                               styleClass="p-mb-3 p-col-12"/>
+                
+            </h:panelGrid>
+            
+            <h:form>
+                <h:panelGrid columns="3" cellpadding="10" 
+                             style="width: 100%; margin-top: 20px;" 
+                             columnClasses="p-col-4, p-col-4, p-col-4">
+                             
+                    <p:commandButton value="Disponibilidades" 
+                                     icon="pi pi-calendar-plus"
+                                     action="disponibilidadeSala.xhtml?faces-redirect=true"
+                                     ajax="false"
+                                     styleClass="ui-button-raised ui-button-primary p-button-lg p-py-3"/>
+                                     
+                    <p:commandButton value="Unidades de Saúde" 
+                                     icon="pi pi-sitemap"
+                                     action="unidadeSaude.xhtml?faces-redirect=true"
+                                     ajax="false"
+                                     styleClass="ui-button-raised ui-button-help p-button-lg p-py-3"/>
+                    
+                    <p:commandButton value="Salas" 
+                                     icon="pi pi-tablet"
+                                     action="sala.xhtml?faces-redirect=true"
+                                     ajax="false"
+                                     styleClass="ui-button-raised ui-button-secondary p-button-lg p-py-3"/>
+                    
+                    <p:commandButton value="Usuários" 
+                                     icon="pi pi-user-edit"
+                                     action="usuario.xhtml?faces-redirect=true"
+                                     ajax="false"
+                                     styleClass="ui-button-raised ui-button-success p-button-lg p-py-3"/>
+                    
+                    <p:commandButton value="Reservas de Sala" 
+                                     icon="pi pi-book"
+                                     action="reservaSala.xhtml?faces-redirect=true"
+                                     ajax="false"
+                                     styleClass="ui-button-raised ui-button-warning p-button-lg p-py-3"/>
+                                     
+                    <p:commandButton value="Pacientes" 
+                                     icon="pi pi-users"
+                                     action="paciente.xhtml?faces-redirect=true"
+                                     ajax="false"
+                                     styleClass="ui-button-raised ui-button-info p-button-lg p-py-3"/>
+                </h:panelGrid>
+            </h:form>
+            
+        </p:panel>
+        
+    </div>
 
 </h:body>
 </html>
