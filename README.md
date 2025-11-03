@@ -13,15 +13,15 @@
 - PrimeFaces Spring Boot Starter » v5.5.7;
 - Spring Boot DevTools » v3.5.7;
 - Hibernate Validator » v8.0.3.Final;
-- Hibernate ORM Hibernate Community Dialects » 7.1.6.Final;
+- Hibernate ORM Hibernate Community Dialects » v7.1.6.Final;
 - Javax Servlet JSP API » v2.0;
 - Javax Servlet JSTL » v1.2;
-- Expression Language Implementation(org.glassfish.web - el-impl) » 2.2;
+- Expression Language Implementation(org.glassfish.web - el-impl) » v2.2;
 - SQLite » v3.50.3.0;
 - Jakarta Server Faces (JSF);
 - PrimeFaces;
 - Maven » v3.9.11;
-- Apache Tomcat » V11.0.4;
+- Apache Tomcat » v11.0.4;
 - Docker / Docker Compose;
 
 #### Estrutura de Pastas
