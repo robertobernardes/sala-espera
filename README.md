@@ -65,17 +65,17 @@ sala-espera/
 ###### **1 - Clone do projeto:**
 
 ```sh
-    git@github.com:robertobernardes/sala-espera.git
+git clone git@github.com:robertobernardes/sala-espera.git
 ```
 
 ###### **2 - Configuração da aplicação**
 ```sh
-    cd sala-espera
+cd sala-espera
 ```
 
 ###### **3 - Build da aplicação**
 ```sh
-    ./docker-run.sh
+./docker-run.sh
 ```
 
 ###### **4 - Utilizando a aplicação**
