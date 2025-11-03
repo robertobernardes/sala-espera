@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Disponibilidade de Salas</title>
+    </h:head>
+
+<h:body>
+	<div style="position: absolute; top: 0; right: 0; padding: 10px;">
+        <h:form>
+            <p:commandButton value="Voltar ao Início" 
+                             icon="pi pi-home"
+                             action="index.xhtml?faces-redirect=true"
+                             ajax="false"
+                             styleClass="ui-button-info ui-button-flat"/>
+        </h:form>
+    </div>
+	<h:form id="formConsulta">
+	    <p:growl id="msgConsulta" showDetail="true" life="4000"/>
+	    
+	    <p:panel header="Filtro de Disponibilidade de Salas" styleClass="p-shadow-2 p-p-4">
+	        <h:panelGrid columns="7" cellpadding="5">
+	            
+	            <p:outputLabel for="unidade" value="Unidade de Saúde:"/>
+	            <p:selectOneMenu id="unidade" 
+	                             value="#{disponibilidadeSalaBean.unidadeSaudeFiltro}" 
+	                             converter="#{unidadeSaudeConverter}" 
+	                             required="true" style="min-width: 300px;">
+	                <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+	                <f:selectItems value="#{disponibilidadeSalaBean.todasUnidades}" 
+	                               var="u" 
+	                               itemLabel="#{u.nome}" 
+	                               itemValue="#{u}" />
+	            </p:selectOneMenu>
+	            
+	            <p:outputLabel for="dataInicio" value="Início:"/>
+	            <p:calendar id="dataInicio" 
+	                        value="#{disponibilidadeSalaBean.dataInicioFiltro}"
+	                        pattern="dd/MM/yyyy HH:mm" timeInput="true" required="true" showButtonPanel="true"/>
+	            
+	            <p:outputLabel for="dataFim" value="Fim:"/>
+	            <p:calendar id="dataFim" 
+	                        value="#{disponibilidadeSalaBean.dataFimFiltro}"
+	                        pattern="dd/MM/yyyy HH:mm" timeInput="true" required="true" showButtonPanel="true"/>
+	            
+	            <p:commandButton value="Consultar" 
+	                             action="#{disponibilidadeSalaBean.consultarDisponibilidade}" 
+	                             update="msgConsulta dtDisponiveis" 
+	                             icon="pi pi-search"
+                                 styleClass="ui-button-info ui-button-raised"/> 
+	        </h:panelGrid>
+	    </p:panel>
+
+        <p:dataTable id="dtDisponiveis" 
+                     caption="Salas Disponíveis"
+	                 value="#{disponibilidadeSalaBean.salasDisponiveis}" 
+	                 var="sala" 
+	                 emptyMessage="Nenhuma sala disponível encontrada para os filtros."
+	                 paginator="true" rows="10" 
+	                 rowHover="true"
+	                 styleClass="p-mt-4 p-datatable-gridlines p-shadow-2">
+	        
+	        <p:column headerText="ID" style="width:50px; text-align: center; background-color: #F0F8FF;"> 
+	            <h:outputText value="#{sala.id}"/>
+	        </p:column>
+	        <p:column headerText="Nome da Sala">
+	            <h:outputText value="#{sala.nome}"/>
+	        </p:column>
+             <p:column headerText="Unidade de Saúde">
+	            <h:outputText value="#{sala.unidadeSaude.nome}"/>
+	        </p:column>
+            <p:column headerText="Reservar" style="width: 100px; text-align: center;">
+			    <p:commandButton icon="pi pi-calendar" title="Reservar"
+			                     action="#{disponibilidadeSalaBean.prepararReserva(sala)}"
+			                     ajax="false" 
+			                     styleClass="ui-button-success ui-button-flat"/>
+			</p:column>
+			
+	    </p:dataTable>
+	</h:form>
+</h:body>
+</html>
