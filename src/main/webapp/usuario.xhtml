@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Gerenciamento de Usuários</title>
+</h:head>
+
+<h:body>
+	<div style="position: absolute; top: 0; right: 0; padding: 10px;">
+        <h:form>
+            <p:commandButton value="Voltar ao Início" 
+                             icon="pi pi-home"
+                             action="index.xhtml?faces-redirect=true"
+                             ajax="false"
+                             styleClass="ui-button-info ui-button-flat"/>
+        </h:form>
+    </div>
+    <h:form id="formPrincipal">
+        <p:panel header="Lista de Usuários">
+        	<p:messages id="messages" showDetail="true" closable="true" />
+            <p:commandButton value="Novo Usuário" 
+                icon="pi pi-plus" 
+                action="#{usuarioBean.novoUsuarioDialog}"
+                update=":formDialog"
+                oncomplete="PF('usuarioDialog').show()"
+                styleClass="ui-button-success p-mb-3"/>
+            
+            <p:dataTable id="dtUsuarios" 
+                         var="usuario" 
+                         value="#{usuarioBean.usuarios}"
+                         emptyMessage="Nenhum Usuário cadastrada."
+                         paginator="true" 
+                         rows="10">
+            
+                <p:column headerText="ID" style="width: 50px;">
+                    <h:outputText value="#{usuario.id}" />
+                </p:column>
+                
+                <p:column headerText="Nome do Usuário" filterBy="#{usuario.nome}">
+                    <h:outputText value="#{usuario.nome}" />
+                </p:column>
+                
+                <p:column headerText="E-mail" style="width: 300px;" filterBy="#{usuario.email}">
+                    <h:outputText value="#{usuario.email}" />
+                </p:column>
+				
+				<p:column headerText="CPF" 
+				          	style="width: 120px;"
+				          	filterBy="#{usuario.cpf}"  
+				        	filterFunction="#{usuarioBean.filtroCpf}">
+			        	<h:outputText value="#{usuario.cpf}">
+			        		<f:converter converterId="cpfConverter" />
+				    	</h:outputText>
+				</p:column>
+                
+                <p:column headerText="Cadastro" style="width: 130px;">
+                    <h:outputText value="#{usuario.dataCadastro}">
+                        <f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy HH:mm"/>
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Ações" style="width: 80px; text-align: center;">
+                    <p:commandButton icon="pi pi-pencil" 
+                        title="Editar" 
+                        action="#{usuarioBean.prepararEdicao(usuario)}"
+                        update=":formDialog"
+                        oncomplete="PF('usuarioDialog').show()"
+                        styleClass="ui-button-info ui-button-flat"/>
+                    
+                    <p:commandButton icon="pi pi-trash" 
+                                     title="Excluir"
+                                     update=":formPrincipal:deleteDialog"
+                                     oncomplete="PF('deleteusuarioDialog').show()"
+                                     styleClass="ui-button-danger ui-button-flat">
+                        <f:setPropertyActionListener value="#{usuario}" target="#{usuarioBean.usuarioSelecionado}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable> 
+        </p:panel>
+
+        <p:confirmDialog widgetVar="deleteusuarioDialog" showEffect="fade" width="300"
+                         header="Confirmação de Exclusão" severity="warn" id="deleteDialog">
+            
+            <f:facet name="message">
+                 <h:outputText value="Tem certeza que deseja excluir '#{usuarioBean.usuarioSelecionado.nome}'?" />
+            </f:facet>
+            
+            <p:commandButton value="Sim" 
+                             icon="pi pi-check" 
+                             action="#{usuarioBean.excluirUsuario}"
+                             update=":formPrincipal:dtUsuarios :formPrincipal:messages" 
+                             process="@this"
+                             oncomplete="PF('deleteusuarioDialog').hide()"
+                             styleClass="ui-confirmdialog-yes"/>
+            <p:commandButton value="Não" 
+                             icon="pi pi-times" 
+                             onclick="PF('deleteusuarioDialog').hide()"
+                             type="button" 
+                             styleClass="ui-button-secondary"/>
+        </p:confirmDialog>
+
+    </h:form>
+
+    <p:dialog header="#{usuarioBean.usuarioSelecionado.id == null ? 'Novo Usuário' : 'Editar Usuário'}" 
+              widgetVar="usuarioDialog" 
+              modal="true" 
+              resizable="false" 
+              closeOnEscape="true"
+              width="700"
+              appendTo="@(body)">
+              
+        <h:form id="formDialog">
+            <p:outputPanel id="usuarioContent" class="p-fluid">
+                
+                <p:fieldset legend="Dados do Usuário" styleClass="p-mb-4">
+                    <div class="p-grid">
+                        <p:outputPanel rendered="#{usuarioBean.usuarioSelecionado.id != null}" styleClass="p-col-12 p-field" style="margin-bottom: 10px;">
+                            <p:outputLabel for="id" value="ID:" style="margin-right: 5px;"/>
+                            <h:outputText id="id" value="#{usuarioBean.usuarioSelecionado.id}"/>
+                            <h:inputHidden value="#{usuarioBean.usuarioSelecionado.id}"/> 
+                        </p:outputPanel>
+                        
+                        <div class="p-col-12 p-field" style="margin-bottom: 10px;">
+                            <p:outputLabel for="nome" value="Nome:" style="margin-right: 5px;"/>
+                            <p:inputText id="nome" value="#{usuarioBean.usuarioSelecionado.nome}" required="true" requiredMessage="O campo Nome é obrigatório." maxlength="255"/>
+                        </div>
+                        
+                        <div class="p-col-12 p-field" style="margin-bottom: 10px;">
+                            <p:outputLabel for="email" value="E-mail:" style="margin-right: 5px;"/>
+                            <p:inputText id="email" value="#{usuarioBean.usuarioSelecionado.email}" required="true" requiredMessage="O campo E-mail é obrigatório." maxlength="255"/>
+                        </div>
+                        
+                        <div class="p-col-12 p-md-8 p-field" style="margin-bottom: 10px;">
+	                        <p:outputLabel for="cpf" value="CPF:" style="margin-right: 5px;"/>
+	                        <p:inputMask id="cpf" mask="999.999.999-99" value="#{usuarioBean.usuarioSelecionado.cpf}" required="true" requiredMessage="O campo CPF é obrigatório.">
+	                            <f:converter converterId="cpfConverter" />
+	                        </p:inputMask>
+	                    </div>
+
+                    </div>
+                </p:fieldset>
+                
+                <div class="p-mt-4 p-d-flex p-jc-end" style="margin-top: 15px; padding: 5px;">
+                     <p:commandButton value="Salvar" 
+                                icon="pi pi-check" 
+                                action="#{usuarioBean.salvarUsuario}" 
+                                update=":formPrincipal:dtUsuarios :formPrincipal:messages" 
+                                process="@form"
+                                oncomplete="if (!args.validationFailed) {PF('usuarioDialog').hide();}" />
+                     <p:commandButton value="Cancelar" 
+                                         icon="pi pi-times" 
+                                         onclick="PF('usuarioDialog').hide()" 
+                                         type="button"
+                                         style="margin-left: 10px;"
+                                         styleClass="ui-button-secondary"/>
+                 </div>
+            </p:outputPanel>
+        </h:form>
+    </p:dialog>
+</h:body>
+</html>

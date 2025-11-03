@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Gerenciamento de Reserva das Salas</title>
+</h:head>
+
+<h:body>
+	<div style="position: absolute; top: 0; right: 0; padding: 10px;">
+        <h:form>
+            <p:commandButton value="Voltar ao Início" 
+                             icon="pi pi-home"
+                             action="index.xhtml?faces-redirect=true"
+                             ajax="false"
+                             styleClass="ui-button-info ui-button-flat"/>
+        </h:form>
+    </div>
+    <h:form id="formPrincipal">
+        <p:panel header="Lista das Reservas da Sala">
+        	<p:messages id="messages" showDetail="true" closable="true" />
+            <p:commandButton value="Nova Reserva de Sala" 
+		                icon="pi pi-plus" 
+		                action="#{reservaSalaBean.novaReservaSalaDialog}"			    
+		                update=":formDialog"
+		                oncomplete="PF('reservaSalaDialog').show()"
+		                styleClass="ui-button-success p-mb-3"/>
+        
+            <p:dataTable id="dtReservaSalas" 
+                         var="reservaSala" 
+                         value="#{reservaSalaBean.reservaSalas}"
+                         emptyMessage="Nenhuma Reserva de Sala cadastrada."
+                         paginator="true" 
+                         rows="10">
+        
+                <p:column headerText="ID" style="width: 50px;">
+                    <h:outputText value="#{reservaSala.id}" />
+                </p:column>
+                
+                <p:column headerText="Sala" filterBy="#{reservaSala.sala.nome}">
+                    <h:outputText value="#{reservaSala.sala.nome}" />
+                </p:column>
+                
+                <p:column headerText="Usuário" filterBy="#{reservaSala.usuario.nome}">
+                    <h:outputText value="#{reservaSala.usuario.nome}" />
+                </p:column>
+                
+                <p:column headerText="Data Início" style="width: 130px;">
+				    <h:outputText value="#{reservaSala.dataInicio}" />
+				</p:column>
+				
+				<p:column headerText="Data Final" style="width: 130px;">
+                    <h:outputText value="#{reservaSala.dataFinal}" />
+                </p:column>
+                
+                
+                <p:column headerText="Data Cadastro" style="width: 130px;">
+                    <h:outputText value="#{reservaSala.dataCadastro}">
+                        <f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="Status" style="width: 80px;">
+                    <h:outputText value="#{reservaSala.statusReservaSala}" />
+                </p:column>
+        
+                <p:column headerText="Ações" style="width: 120px; text-align: center;">
+                    
+                   <p:commandButton icon="pi pi-pencil" 
+                        title="Editar" 
+                        action="#{reservaSalaBean.prepararEdicao(reservaSala)}"                        
+                        update=":formDialog"
+                        oncomplete="PF('reservaSalaDialog').show()"
+                        styleClass="ui-button-info ui-button-flat">
+                    </p:commandButton>
+                    
+                    <p:commandButton icon="pi pi-ban" 
+                                     title="Cancelar"
+                                     update=":formPrincipal:cancelarDialog"
+                                     oncomplete="PF('cancelarReservaSalaDialog').show()"
+                                     styleClass="ui-button-danger ui-button-flat">
+                        <f:setPropertyActionListener value="#{reservaSala}" target="#{reservaSalaBean.reservaSalaSelecionada}" />
+                    </p:commandButton>
+                    
+                    <p:commandButton icon="pi pi-trash" 
+                                     title="Excluir"
+                                     update=":formPrincipal:deleteDialog"
+                                     oncomplete="PF('deleteReservaSalaDialog').show()"
+                                     styleClass="ui-button-danger ui-button-flat">
+                        <f:setPropertyActionListener value="#{reservaSala}" target="#{reservaSalaBean.reservaSalaSelecionada}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable> 
+        </p:panel>
+
+        <p:confirmDialog widgetVar="deleteReservaSalaDialog" showEffect="fade" width="300"
+                         header="Confirmação de Exclusão" severity="warn" id="deleteDialog">
+            
+            <f:facet name="message">
+                 <h:outputText value="Tem certeza que deseja excluir '#{reservaSalaBean.reservaSalaSelecionada.id}'?" />
+            </f:facet>
+            
+            <p:commandButton value="Sim" 
+                             icon="pi pi-check" 
+                             action="#{reservaSalaBean.excluirReservaSala}"
+                             update=":formPrincipal:dtReservaSalas :formPrincipal:messages" 
+                             process="@this"
+                             oncomplete="PF('deleteReservaSalaDialog').hide()"
+                             styleClass="ui-confirmdialog-yes"/>
+            <p:commandButton value="Não" 
+                             icon="pi pi-times" 
+                             onclick="PF('deleteReservaSalaDialog').hide()"
+                             type="button" 
+                             styleClass="ui-button-secondary"/>
+        </p:confirmDialog>
+        
+        <p:confirmDialog widgetVar="cancelarReservaSalaDialog" showEffect="fade" width="300"
+                         header="Confirmação de Cancelamento" severity="warn" id="cancelarDialog">
+            
+            <f:facet name="message">
+                 <h:outputText value="Tem certeza que deseja cancelar '#{reservaSalaBean.reservaSalaSelecionada.id}'?" />
+            </f:facet>
+            
+            <p:commandButton value="Sim" 
+                             icon="pi pi-check" 
+                             action="#{reservaSalaBean.cancelarReservaSala}"
+                             update=":formPrincipal:dtReservaSalas :formPrincipal:messages" 
+                             process="@this"
+                             oncomplete="PF('cancelarReservaSalaDialog').hide()"
+                             styleClass="ui-confirmdialog-yes"/>
+            <p:commandButton value="Não" 
+                             icon="pi pi-times" 
+                             onclick="PF('cancelarReservaSalaDialog').hide()"
+                             type="button" 
+                             styleClass="ui-button-secondary"/>
+        </p:confirmDialog>
+    </h:form>
+
+    <p:dialog header="#{reservaSalaBean.reservaSalaSelecionada.id == null ? 'Nova Reserva de Sala' : 'Editar Reserva de Sala'}" 
+          widgetVar="reservaSalaDialog" 
+          modal="true" 
+          resizable="false" 
+          closeOnEscape="true"
+          width="700"
+          appendTo="@(body)">
+          
+    <h:form id="formDialog">
+        
+        <p:outputPanel id="reservaSalaContent" class="p-fluid">
+            
+            <p:fieldset legend="Dados Básicos" styleClass="p-mb-4">
+                <div class="p-grid">
+                    <p:outputPanel rendered="#{reservaSalaBean.reservaSalaSelecionada.id != null}" styleClass="p-col-12 p-md-6 p-field" style="margin-bottom: 10px;">
+                        <p:outputLabel for="id" value="ID:" style="margin-right: 5px;"/>
+                        <h:outputText id="id" value="#{reservaSalaBean.reservaSalaSelecionada.id}"/>
+                        <h:inputHidden value="#{reservaSalaBean.reservaSalaSelecionada.id}"/> 
+                    </p:outputPanel>
+                    
+                    <div class="p-col-12 p-field" style="margin-bottom: 10px;">
+					    <p:outputLabel for="dataInicio" value="Data e Hora de Início:" style="margin-right: 5px;"/>
+					    <p:calendar id="dataInicio" 
+					                value="#{reservaSalaBean.reservaSalaSelecionada.dataInicio}"
+					                pattern="dd/MM/yyyy HH:mm"
+					                showOn="button"
+					                mask="true"
+					                locale="pt_BR"
+					                timeInput="true"
+					                required="true" 
+					                requiredMessage="O campo Data de Início é obrigatório."
+					                mindate="#{reservaSalaBean.minDateTime}"
+					                maxdate="#{reservaSalaBean.reservaSalaSelecionada.dataFinal}"
+					                showButtonPanel="true">
+					        <p:ajax event="dateSelect" update="dataFinal" listener="#{reservaSalaBean.ajustarDataFinal}" />
+					        <p:ajax event="change" update="dataFinal" listener="#{reservaSalaBean.ajustarDataFinal}" />
+					    </p:calendar>
+					</div>
+					
+					<div class="p-col-12 p-field" style="margin-bottom: 10px;">
+					    <p:outputLabel for="dataFinal" value="Data e Hora do Fim:" style="margin-right: 5px;"/>
+					    <p:calendar id="dataFinal" 
+					                value="#{reservaSalaBean.reservaSalaSelecionada.dataFinal}"
+					                pattern="dd/MM/yyyy HH:mm"
+					                showOn="button"
+					                mask="true"
+					                locale="pt_BR"
+					                timeInput="true"
+					                required="true" 
+					                requiredMessage="O campo Data do Fim é obrigatório."
+					                mindate="#{reservaSalaBean.reservaSalaSelecionada.dataInicio}"
+					                showButtonPanel="true">
+					        <p:ajax event="dateSelect" update="dataInicio" />
+					        <p:ajax event="change" update="dataInicio" />
+					    </p:calendar>
+					</div>
+                    
+                    <div class="p-col-12 p-field" style="margin-bottom: 10px;">
+						<p:outputLabel for="sala" value="Sala:" style="margin-right: 5px;"/>						
+						<p:selectOneMenu id="sala" 
+						    value="#{reservaSalaBean.reservaSalaSelecionada.sala}" 
+						    converter="#{salaConverter}" 
+						    required="true" requiredMessage="O campo Sala é obrigatório.">
+						    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+						    <f:selectItems value="#{reservaSalaBean.salasDisponiveis}" 
+						                   var="unid" 
+						                   itemLabel="#{unid.nome}" 
+						                   itemValue="#{unid}" />
+						</p:selectOneMenu>
+                    </div>
+                    
+                    <div class="p-col-12 p-field" style="margin-bottom: 10px;">
+						<p:outputLabel for="usuario" value="Usuário:" style="margin-right: 5px;"/>						
+						<p:selectOneMenu id="usuario" 
+						    value="#{reservaSalaBean.reservaSalaSelecionada.usuario}" 
+						    converter="#{usuarioConverter}" 
+						    required="true" requiredMessage="O campo Usuário é obrigatório.">
+						    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+						    <f:selectItems value="#{reservaSalaBean.usuariosDisponiveis}" 
+						                   var="unid" 
+						                   itemLabel="#{unid.nome}" 
+						                   itemValue="#{unid}" />
+						</p:selectOneMenu>
+                    </div>
+                                      
+                </div>
+            </p:fieldset>
+            
+            <div class="p-mt-4 p-d-flex p-jc-end" style="margin-top: 15px; padding: 5px;">
+                 <p:commandButton value="Salvar" 
+                            icon="pi pi-check" 
+                            action="#{reservaSalaBean.salvarReservaSala}" 
+                            update=":formPrincipal:dtReservaSalas :formPrincipal:messages" 
+                            process="@form"
+                            oncomplete="if (!args.validationFailed) {PF('reservaSalaDialog').hide();}" />
+                    
+                 <p:commandButton value="Cancelar" 
+                                     icon="pi pi-times" 
+                                     onclick="PF('reservaSalaDialog').hide()" 
+                                     type="button"
+                                     style="margin-left: 10px;"
+                                     styleClass="ui-button-secondary"/>
+            </div>
+            
+        </p:outputPanel>
+        
+        </h:form>
+</p:dialog>
+    </h:body>
+</html>

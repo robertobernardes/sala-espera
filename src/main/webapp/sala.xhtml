@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Gerenciamento de Salas</title>
+</h:head>
+
+<h:body>
+	<div style="position: absolute; top: 0; right: 0; padding: 10px;">
+        <h:form>
+            <p:commandButton value="Voltar ao Início" 
+                             icon="pi pi-home"
+                             action="index.xhtml?faces-redirect=true"
+                             ajax="false"
+                             styleClass="ui-button-info ui-button-flat"/>
+        </h:form>
+    </div>
+    <h:form id="formPrincipal">
+        <p:panel header="Lista de Salas">
+        	<p:messages id="messages" showDetail="true" closable="true" />
+            <p:commandButton value="Nova Sala" 
+                icon="pi pi-plus" 
+                action="#{salaBean.novaSalaDialog}"			    
+                update=":formDialog"
+                oncomplete="PF('salaDialog').show()"
+                styleClass="ui-button-success p-mb-3"/>
+            
+            <p:dataTable id="dtSalas" 
+                         var="sala" 
+                         value="#{salaBean.salas}"
+                         emptyMessage="Nenhuma Sala cadastrada."
+                         paginator="true" 
+                         rows="10">
+            
+                <p:column headerText="ID" style="width: 50px;">
+                    <h:outputText value="#{sala.id}" />
+                </p:column>
+                
+                <p:column headerText="Nome da Sala" filterBy="#{sala.nome}">
+                    <h:outputText value="#{sala.nome}" />
+                </p:column>
+                
+                <p:column headerText="Capacidade" style="width: 100px;">
+                    <h:outputText value="#{sala.capacidade}" />
+                </p:column>
+
+                <p:column headerText="Unidade de Saúde" filterBy="#{sala.unidadeSaude.nome}">
+                    <h:outputText value="#{sala.unidadeSaude.nome}" />
+                </p:column>
+                
+                <p:column headerText="Cadastro" style="width: 130px;">
+				    <h:outputText value="#{sala.dataCadastro}">
+				        <f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy HH:mm"/>
+				    </h:outputText>
+				</p:column>
+
+                <p:column headerText="Ações" style="width: 80px; text-align: center;">
+                    <p:commandButton icon="pi pi-pencil" 
+                        title="Editar" 
+                        action="#{salaBean.prepararEdicao(sala)}"					    
+                        update=":formDialog"
+                        oncomplete="PF('salaDialog').show()"
+                        styleClass="ui-button-info ui-button-flat"/>
+                    
+                    <p:commandButton icon="pi pi-trash" 
+                                     title="Excluir"
+                                     update=":formPrincipal:deleteDialog"
+                                     oncomplete="PF('deleteSalaDialog').show()"
+                                     styleClass="ui-button-danger ui-button-flat">
+                        <f:setPropertyActionListener value="#{sala}" target="#{salaBean.salaSelecionada}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable> 
+        </p:panel>
+
+        <p:confirmDialog widgetVar="deleteSalaDialog" showEffect="fade" width="300"
+                         header="Confirmação de Exclusão" severity="warn" id="deleteDialog">
+            
+            <f:facet name="message">
+                 <h:outputText value="Tem certeza que deseja excluir '#{salaBean.salaSelecionada.nome}'?" />
+            </f:facet>
+            
+            <p:commandButton value="Sim" 
+                             icon="pi pi-check" 
+                             action="#{salaBean.excluirSala}"
+                             update=":formPrincipal:dtSalas :formPrincipal:messages" 
+                             process="@this"
+                             oncomplete="PF('deleteSalaDialog').hide()"
+                             styleClass="ui-confirmdialog-yes"/>
+            <p:commandButton value="Não" 
+                             icon="pi pi-times" 
+                             onclick="PF('deleteSalaDialog').hide()"
+                             type="button" 
+                             styleClass="ui-button-secondary"/>
+        </p:confirmDialog>
+
+    </h:form>
+
+	<p:dialog header="#{salaBean.salaSelecionada.id == null ? 'Nova Sala' : 'Editar Sala'}" 
+	          widgetVar="salaDialog" 
+	          modal="true" 
+	          resizable="false" 
+	          closeOnEscape="true"
+	          width="700"
+	          appendTo="@(body)">
+	          
+	    <h:form id="formDialog">
+	        <p:outputPanel id="salaContent" class="p-fluid">
+	            
+	            <p:fieldset legend="Dados da Sala" styleClass="p-mb-4">
+	                <div class="p-grid">
+	                    <p:outputPanel rendered="#{salaBean.salaSelecionada.id != null}" styleClass="p-col-12 p-field" style="margin-bottom: 10px;">
+	                        <p:outputLabel for="id" value="ID:" style="margin-right: 5px;"/>
+	                        <h:outputText id="id" value="#{salaBean.salaSelecionada.id}"/>
+	                        <h:inputHidden value="#{salaBean.salaSelecionada.id}"/>	
+	                    </p:outputPanel>
+	                    
+	                    <div class="p-col-12 p-field" style="margin-bottom: 10px;">
+	                        <p:outputLabel for="nome" value="Nome da Sala:" style="margin-right: 5px;"/>
+	                        <p:inputText id="nome" value="#{salaBean.salaSelecionada.nome}" required="true" requiredMessage="O campo Nome é obrigatório." maxlength="255"/>
+	                    </div>
+	                    
+	                    <div class="p-col-12 p-field" style="margin-bottom: 10px;">
+	                        <p:outputLabel for="capacidade" value="Capacidade:" style="margin-right: 5px;"/>
+	                        <p:inputNumber id="capacidade" value="#{salaBean.salaSelecionada.capacidade}" required="true" requiredMessage="O campo Capacidade é obrigatório." decimalPlaces="0"/>
+	                    </div>
+	                    
+						<div class="p-col-12 p-field" style="margin-bottom: 10px;">
+							<p:outputLabel for="unidade" value="Unidade de Saúde:" style="margin-right: 5px;"/>						
+							<p:selectOneMenu id="unidade" 
+							    value="#{salaBean.salaSelecionada.unidadeSaude}" 
+							    converter="#{unidadeSaudeConverter}" 
+							    required="true" requiredMessage="O campo Unidade de Saúde é obrigatório.">
+							    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+							    <f:selectItems value="#{salaBean.unidadesDisponiveis}" 
+							                   var="unid" 
+							                   itemLabel="#{unid.nome}" 
+							                   itemValue="#{unid}" />
+							</p:selectOneMenu>
+	                    </div>
+	                </div>
+	            </p:fieldset>
+	            
+	            <div class="p-mt-4 p-d-flex p-jc-end" style="margin-top: 15px; padding: 5px;">
+	                 <p:commandButton value="Salvar" 
+							    icon="pi pi-check" 
+							    action="#{salaBean.salvarSala}" 
+							    update=":formPrincipal:dtSalas :formPrincipal:messages" 
+	                            process="@form"
+							    oncomplete="if (!args.validationFailed) {PF('salaDialog').hide();}" />
+		             <p:commandButton value="Cancelar" 
+		                                 icon="pi pi-times" 
+		                                 onclick="PF('salaDialog').hide()" 
+		                                 type="button"
+		                                 style="margin-left: 10px;"
+		                                 styleClass="ui-button-secondary"/>
+	             </div>
+	        </p:outputPanel>
+	    </h:form>
+	</p:dialog>
+</h:body>
+</html>

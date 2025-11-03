@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Gerenciamento de Unidades de Saúde</title>
+</h:head>
+
+<h:body>
+	<div style="position: absolute; top: 0; right: 0; padding: 10px;">
+        <h:form>
+            <p:commandButton value="Voltar ao Início" 
+                             icon="pi pi-home"
+                             action="index.xhtml?faces-redirect=true"
+                             ajax="false"
+                             styleClass="ui-button-info ui-button-flat"/>
+        </h:form>
+    </div>
+    <h:form id="formPrincipal">
+        <p:panel header="Lista de Unidades de Saúde">
+        	<p:messages id="messages" showDetail="true" closable="true" />
+		    <p:commandButton value="Nova Unidade" 
+					    icon="pi pi-plus" 
+					    action="#{unidadeSaudeBean.novaUnidadeDialog}"			    
+					    update=":formDialog"
+					    oncomplete="PF('unidadeDialog').show()"
+					    styleClass="ui-button-success p-mb-3"/>
+		
+		    <p:dataTable id="dtUnidades" 
+		                 var="unidade" 
+		                 value="#{unidadeSaudeBean.unidades}"
+		                 emptyMessage="Nenhuma Unidade de Saúde cadastrada."
+		                 paginator="true" 
+		                 rows="10">
+		
+		        <p:column headerText="ID" style="width: 50px;">
+		            <h:outputText value="#{unidade.id}" />
+		        </p:column>
+		        
+		        <p:column headerText="Nome" filterBy="#{unidade.nome}">
+		            <h:outputText value="#{unidade.nome}" />
+		        </p:column>
+		        
+                <p:column headerText="Razão Social" filterBy="#{unidade.razaoSocial}">
+		            <h:outputText value="#{unidade.razaoSocial}" />
+		        </p:column>
+		
+		        <p:column headerText="Sigla" style="width: 70px;" filterBy="#{unidade.sigla}">
+		            <h:outputText value="#{unidade.sigla}" />
+		        </p:column>
+		        
+		        <p:column headerText="CNPJ" 
+				          	style="width: 150px;"
+				          	filterBy="#{unidade.cnpj}"  
+				        	filterFunction="#{unidadeSaudeBean.filtroCnpj}">
+			        	<h:outputText value="#{unidade.cnpj}">
+			        		<f:converter converterId="cnpjConverter" />
+				    	</h:outputText>
+				</p:column>
+				
+                <p:column headerText="CNES" style="width: 100px;" filterBy="#{unidade.cnes}">
+		            <h:outputText value="#{unidade.cnes}" />
+		        </p:column>
+                
+                <p:column headerText="Cadastro" style="width: 130px;">
+				    <h:outputText value="#{unidade.dataCadastro}">
+				        <f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy HH:mm"/>
+				    </h:outputText>
+				</p:column>
+		
+		        <p:column headerText="Ações" style="width: 120px; text-align: center;">
+		            
+		           <p:commandButton icon="pi pi-pencil" 
+					    title="Editar" 
+					    action="#{unidadeSaudeBean.prepararEdicao(unidade)}"					    
+					    update=":formDialog"
+					    oncomplete="PF('unidadeDialog').show()"
+					    styleClass="ui-button-info ui-button-flat">
+					</p:commandButton>
+		            
+		            <p:commandButton icon="pi pi-trash" 
+		                             title="Excluir"
+		                             update=":formPrincipal:deleteDialog"
+		                             oncomplete="PF('deleteUnidadeDialog').show()"
+		                             styleClass="ui-button-danger ui-button-flat">
+		                <f:setPropertyActionListener value="#{unidade}" target="#{unidadeSaudeBean.unidadeSelecionada}" />
+		            </p:commandButton>
+		        </p:column>
+		    </p:dataTable> 
+    	</p:panel>
+
+        <p:confirmDialog widgetVar="deleteUnidadeDialog" showEffect="fade" width="300"
+                         header="Confirmação de Exclusão" severity="warn" id="deleteDialog">
+            
+            <f:facet name="message">
+                 <h:outputText value="Tem certeza que deseja excluir '#{unidadeSaudeBean.unidadeSelecionada.nome}'?" />
+            </f:facet>
+            
+            <p:commandButton value="Sim" 
+                             icon="pi pi-check" 
+                             action="#{unidadeSaudeBean.excluirUnidade}"
+                             update=":formPrincipal:dtUnidades :formPrincipal:messages" 
+                             process="@this"
+                             oncomplete="PF('deleteUnidadeDialog').hide()"
+                             styleClass="ui-confirmdialog-yes"/>
+            <p:commandButton value="Não" 
+                             icon="pi pi-times" 
+                             onclick="PF('deleteUnidadeDialog').hide()"
+                             type="button" 
+                             styleClass="ui-button-secondary"/>
+        </p:confirmDialog>
+    </h:form>
+
+    <p:dialog header="#{unidadeSaudeBean.unidadeSelecionada.id == null ? 'Nova Unidade de Saúde' : 'Editar Unidade de Saúde'}" 
+	          widgetVar="unidadeDialog" 
+	          modal="true" 
+	          resizable="false" 
+	          closeOnEscape="true"
+	          width="700"
+	          appendTo="@(body)">
+	          
+	    <h:form id="formDialog">	        
+	        <p:outputPanel id="unidadeContent" styleClass="p-fluid">	            
+	            <p:fieldset legend="Dados Básicos" styleClass="p-mb-4">
+	                <div class="p-grid">
+	                    <p:outputPanel rendered="#{unidadeSaudeBean.unidadeSelecionada.id != null}" 
+	                                   styleClass="p-col-12 p-md-6 p-field" style="margin-bottom: 10px;"> 
+	                        <p:outputLabel for="id" value="ID:" style="margin-right: 5px;"/>
+	                        <h:outputText id="id" value="#{unidadeSaudeBean.unidadeSelecionada.id}"/>
+	                        <h:inputHidden value="#{unidadeSaudeBean.unidadeSelecionada.id}"/> 
+	                    </p:outputPanel>	
+	                    <div class="p-col-12 p-field" style="margin-bottom: 10px;">
+	                        <p:outputLabel for="nome" value="Nome:" style="margin-right: 5px;"/>
+	                        <p:inputText id="nome" value="#{unidadeSaudeBean.unidadeSelecionada.nome}" required="true" requiredMessage="O campo Nome Fantasia é obrigatório." maxlength="255"/>
+	                    </div>
+	                    <div class="p-col-12 p-field" style="margin-bottom: 10px;">
+	                        <p:outputLabel for="razaoSocial" value="Razão Social:" style="margin-right: 5px;"/>
+	                        <p:inputText id="razaoSocial" value="#{unidadeSaudeBean.unidadeSelecionada.razaoSocial}" required="true" requiredMessage="O campo Razão Social é obrigatório." maxlength="50"/>
+	                    </div>
+	                </div>
+	            </p:fieldset>	            
+	            <p:fieldset legend="Documentação e Siglas" style="margin-top: 15px;">
+	                 <div class="p-grid">
+	                    <div class="p-col-12 p-md-4 p-field" style="margin-bottom: 10px;">
+	                        <p:outputLabel for="sigla" value="Sigla:" style="margin-right: 5px;"/>
+	                        <p:inputText id="sigla" value="#{unidadeSaudeBean.unidadeSelecionada.sigla}" required="true" requiredMessage="O campo Sigla é obrigatório." maxlength="150"/>
+	                    </div>
+	                    <div class="p-col-12 p-md-8 p-field" style="margin-bottom: 10px;">
+	                        <p:outputLabel for="cnpj" value="CNPJ:" style="margin-right: 5px;"/>
+	                        <p:inputMask id="cnpj" mask="99.999.999/9999-99" value="#{unidadeSaudeBean.unidadeSelecionada.cnpj}" required="true" requiredMessage="O campo CNPJ é obrigatório.">
+	                            <f:converter converterId="cnpjConverter" />
+	                        </p:inputMask>
+	                    </div>	
+	                    <div class="p-col-12 p-field" style="margin-bottom: 10px;">
+	                        <p:outputLabel for="cnes" value="CNES:" style="margin-right: 5px;"/>
+	                        <p:inputText id="cnes" value="#{unidadeSaudeBean.unidadeSelecionada.cnes}" required="true" requiredMessage="O campo CNES é obrigatório." maxlength="150"/>
+	                    </div>
+	                </div>
+	            </p:fieldset>
+	            
+	            <div class="p-mt-4 p-d-flex p-jc-end" style="margin-top: 15px; padding: 5px;">
+	                 <p:commandButton value="Salvar" 
+	                            icon="pi pi-check" 
+	                            action="#{unidadeSaudeBean.salvarUnidade}" 
+	                            update=":formPrincipal:dtUnidades :formPrincipal:messages" 
+	                            process="@form"
+	                            oncomplete="if (!args.validationFailed) {PF('unidadeDialog').hide();}" />
+	                
+	                 <p:commandButton value="Cancelar" 
+	                                     icon="pi pi-times" 
+	                                     onclick="PF('unidadeDialog').hide()" 
+	                                     type="button"
+	                                     style="margin-left: 10px;"
+	                                     styleClass="ui-button-secondary"/>
+	            </div>
+	            
+	        </p:outputPanel>
+	        
+	    </h:form>
+	</p:dialog>
+    </h:body>
+</html>
