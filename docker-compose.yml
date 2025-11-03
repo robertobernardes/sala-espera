@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      context: . 
+      dockerfile: Dockerfile
+
+    container_name: app-sala-espera
+    
+    ports:
+      - "8087:8080"
+          
+    restart: unless-stopped
+    
+    environment:
+      - JAVA_OPTS=-Xmx512m
