@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.gov.ba.sesab.sala_espera.domains.ReservaSala;
+import br.gov.ba.sesab.sala_espera.domains.Sala;
 import br.gov.ba.sesab.sala_espera.domains.Usuario;
 import br.gov.ba.sesab.sala_espera.repositories.ReservaSalaRepository;
 
@@ -45,5 +46,9 @@ public class ReservaSalaService {
     
     public List<ReservaSala> findByUsuario(Usuario usuario) {
     	return reservaSalaRepository.findByUsuario(usuario);
+    }
+    
+    public List<ReservaSala> findBySala(Sala sala) {
+    	return reservaSalaRepository.findBySala(sala);
     }
 }

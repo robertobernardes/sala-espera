@@ -6,11 +6,12 @@ import java.util.List;
 
 import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
+import br.gov.ba.sesab.sala_espera.domains.ReservaSala;
 import br.gov.ba.sesab.sala_espera.domains.Sala;
 import br.gov.ba.sesab.sala_espera.domains.UnidadeSaude;
+import br.gov.ba.sesab.sala_espera.services.ReservaSalaService;
 import br.gov.ba.sesab.sala_espera.services.SalaService;
 import br.gov.ba.sesab.sala_espera.services.UnidadeSaudeService;
 import jakarta.annotation.PostConstruct;
@@ -26,6 +27,8 @@ public class SalaBean implements Serializable {
     private SalaService salaService;
 	@Autowired 
     private UnidadeSaudeService unidadeSaudeService;
+	@Autowired
+    private ReservaSalaService reservaSalaService;
 
     private List<Sala> salas;
     private Sala salaSelecionada;
@@ -66,7 +69,9 @@ public class SalaBean implements Serializable {
     public void excluirSala() {
     	try {
 	        if (salaSelecionada != null) {
-	        	if (salaSelecionada.getUnidadeSaude().getId() != null) {
+	        	//Pesquisando se a Sala está associado alguma reserva de sala
+	        	List<ReservaSala> reservaSalaResult = reservaSalaService.findBySala(salaSelecionada);        	
+	        	if (!reservaSalaResult.isEmpty()) {
 	        		// Adiciona a mensagem ao contexto JSF
 	    	        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error - Detalhe: ", "Não foi possível excluir a Sala. Existem reservas associadas a ela (Violação de Chave Estrangeira)"));	        
 	    	        // Atualiza apenas o componente de mensagens via AJAX

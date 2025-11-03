@@ -50,4 +50,5 @@ public interface ReservaSalaRepository extends JpaRepository<ReservaSala, Intege
     );
     
     List<ReservaSala> findByUsuario(Usuario usuario);
+    List<ReservaSala> findBySala(Sala sala);
 }

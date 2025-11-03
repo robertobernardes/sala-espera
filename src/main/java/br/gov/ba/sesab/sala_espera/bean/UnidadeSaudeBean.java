@@ -60,7 +60,8 @@ public class UnidadeSaudeBean implements Serializable {
     
     public void excluirUnidade() {
         if (unidadeSelecionada != null) {
-        	List<Sala> salasResult = salaService.findByUnidadeSaude(unidadeSelecionada);        	
+        	//Pesquisando se a Unidade está associado alguma sala
+        	List<Sala> salasResult = salaService.findByUnidadeSaude(unidadeSelecionada);
         	if (!salasResult.isEmpty()) {
         		// Adiciona a mensagem ao contexto JSF
     	        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error - Detalhe: ", "Não foi possível excluir a Unidade de Saúde. Existem Salas associadas a ela (Violação de Chave Estrangeira)"));	        
