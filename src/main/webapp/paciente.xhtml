@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Gerenciamento de Pacientes</title>
+</h:head>
+
+<h:body>
+	<div style="position: absolute; top: 0; right: 0; padding: 10px;">
+        <h:form>
+            <p:commandButton value="Voltar ao Início" 
+                             icon="pi pi-home"
+                             action="index.xhtml?faces-redirect=true"
+                             ajax="false"
+                             styleClass="ui-button-info ui-button-flat"/>
+        </h:form>
+    </div>
+    <h:form id="formPrincipal">
+        <p:panel header="Lista de Pacientes">
+        	<p:messages id="messages" showDetail="true" closable="true" />
+            <p:commandButton value="Novo Paciente" 
+                icon="pi pi-plus" 
+                action="#{pacienteBean.novoPacienteDialog}"
+                update=":formDialog"
+                oncomplete="PF('pacienteDialog').show()"
+                styleClass="ui-button-success p-mb-3"/>
+            
+            <p:dataTable id="dtPacientes" 
+                         var="paciente" 
+                         value="#{pacienteBean.pacientes}"
+                         emptyMessage="Nenhum Paciente cadastrada."
+                         paginator="true" 
+                         rows="10">
+            
+                <p:column headerText="ID" style="width: 50px;">
+                    <h:outputText value="#{paciente.id}" />
+                </p:column>
+                
+                <p:column headerText="Nome do Paciente" filterBy="#{paciente.nome}">
+                    <h:outputText value="#{paciente.nome}" />
+                </p:column>
+                
+                <p:column headerText="Nome Social" filterBy="#{paciente.nomeSocial}">
+                    <h:outputText value="#{paciente.nomeSocial}" />
+                </p:column>
+                
+                <p:column headerText="Nome da Mãe" filterBy="#{paciente.nomeMae}">
+                    <h:outputText value="#{paciente.nomeMae}" />
+                </p:column>
+                
+                <p:column headerText="Nome do Pai" filterBy="#{paciente.nomePai}">
+                    <h:outputText value="#{paciente.nomePai}" />
+                </p:column>
+                
+                 <p:column headerText="Telefone" filterBy="#{paciente.telefone}">
+                    <h:outputText value="#{paciente.telefone}" />
+                </p:column>
+                
+                <p:column headerText="E-mail" filterBy="#{paciente.email}">
+                    <h:outputText value="#{paciente.email}" />
+                </p:column>
+                                
+				<p:column headerText="CPF" 
+				          	style="width: 120px;"
+				          	filterBy="#{paciente.cpf}"  
+				        	filterFunction="#{pacienteBean.filtroCpf}">
+			        	<h:outputText value="#{paciente.cpf}">
+			        		<f:converter converterId="cpfConverter" />
+				    	</h:outputText>
+				</p:column>
+				
+				<p:column headerText="Sexo" style="width: 80px;">
+			    	<h:outputText value="#{paciente.sexo ? 'Feminino' : 'Masculino'}" />
+			    </p:column>
+				
+				<p:column headerText="RG" filterBy="#{paciente.rg}">
+                    <h:outputText value="#{paciente.rg}" />
+                </p:column>
+                
+                <p:column headerText="CNS" filterBy="#{paciente.cns}">
+                    <h:outputText value="#{paciente.cns}" />
+                </p:column>
+                
+               <p:column headerText="Data Nascimento" style="width: 120px;">
+				    <h:outputText value="#{paciente.dataNascimento}">
+				        <f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+				    </h:outputText>
+				</p:column>
+				
+				<p:column headerText="Endereço">
+                    <h:outputText value="#{paciente.endereco.municipio.nome}" />
+                </p:column>
+
+                <p:column headerText="Ações" style="width: 80px; text-align: center;">
+                    <p:commandButton icon="pi pi-pencil" 
+                        title="Editar" 
+                        action="#{pacienteBean.prepararEdicao(paciente)}"
+                        update=":formDialog"
+                        oncomplete="PF('pacienteDialog').show()"
+                        styleClass="ui-button-info ui-button-flat"/>
+                    
+                    <p:commandButton icon="pi pi-trash" 
+                                     title="Excluir"
+                                     update=":formPrincipal:deleteDialog"
+                                     oncomplete="PF('deletePacienteDialog').show()"
+                                     styleClass="ui-button-danger ui-button-flat">
+                        <f:setPropertyActionListener value="#{paciente}" target="#{pacienteBean.pacienteSelecionado}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable> 
+        </p:panel>
+
+        <p:confirmDialog widgetVar="deletePacienteDialog" showEffect="fade" width="300"
+                         header="Confirmação de Exclusão" severity="warn" id="deleteDialog">
+            
+            <f:facet name="message">
+                 <h:outputText value="Tem certeza que deseja excluir '#{pacienteBean.pacienteSelecionado.nome}'?" />
+            </f:facet>
+            
+            <p:commandButton value="Sim" 
+                             icon="pi pi-check" 
+                             action="#{pacienteBean.excluirPaciente}"
+                             update=":formPrincipal:dtPacientes :formPrincipal:messages" 
+                             process="@this"
+                             oncomplete="PF('deletePacienteDialog').hide()"
+                             styleClass="ui-confirmdialog-yes"/>
+            <p:commandButton value="Não" 
+                             icon="pi pi-times" 
+                             onclick="PF('deletePacienteDialog').hide()"
+                             type="button" 
+                             styleClass="ui-button-secondary"/>
+        </p:confirmDialog>
+
+    </h:form>
+    
+    <p:dialog header="#{pacienteBean.pacienteSelecionado.id == null ? 'Novo Paciente' : 'Editar Paciente'}" 
+              widgetVar="pacienteDialog" 
+              modal="true" 
+              resizable="false" 
+              closeOnEscape="true"
+              width="800"
+              height="600" scrollable="true" appendTo="@(body)">
+              
+    <h:form id="formDialog">
+        <p:outputPanel id="pacienteContent" class="p-fluid">
+            
+            <p:fieldset legend="Dados Pessoais do Paciente" styleClass="p-mb-4">
+                <div class="p-grid">
+                    
+                    <p:outputPanel rendered="#{pacienteBean.pacienteSelecionado.id != null}" 
+                                   styleClass="p-col-12 p-md-6 p-field" style="margin-bottom: 15px;">
+                        <p:outputLabel for="id" value="ID:" style="margin-right: 5px;"/>
+                        <h:outputText id="id" value="#{pacienteBean.pacienteSelecionado.id}"/>
+                        <h:inputHidden value="#{pacienteBean.pacienteSelecionado.id}"/> 
+                    </p:outputPanel>
+                    
+                    <div class="p-col-12 p-md-6 p-field" style="margin-bottom: 15px;">
+                        <p:outputLabel for="nome" value="Nome:" style="margin-right: 5px;"/>
+                        <p:inputText id="nome" value="#{pacienteBean.pacienteSelecionado.nome}" required="true" requiredMessage="O campo Nome é obrigatório." maxlength="255"/>
+                    </div>
+                    
+                    <div class="p-col-12 p-field" style="margin-bottom: 15px;">
+                        <p:outputLabel for="nomeSocial" value="Nome Social:" style="margin-right: 5px;"/>
+                        <p:inputText id="nomeSocial" value="#{pacienteBean.pacienteSelecionado.nomeSocial}" required="true" requiredMessage="O campo Nome Social é obrigatório." maxlength="255"/>
+                    </div>
+                    
+                    <div class="p-col-12 p-field" style="margin-bottom: 15px;">
+                        <p:outputLabel for="nomeMae" value="Nome da Mãe:" style="margin-right: 5px;"/>
+                        <p:inputText id="nomeMae" value="#{pacienteBean.pacienteSelecionado.nomeMae}" required="true" requiredMessage="O campo Nome da Mãe é obrigatório." maxlength="255"/>
+                    </div>
+                    
+                    <div class="p-col-12 p-field" style="margin-bottom: 15px;">
+                        <p:outputLabel for="nomePai" value="Nome do Pai:" style="margin-right: 5px;"/>
+                        <p:inputText id="nomePai" value="#{pacienteBean.pacienteSelecionado.nomePai}" maxlength="255"/>
+                    </div>
+                                                
+                    <div class="p-col-12 p-md-4 p-field" style="margin-bottom: 15px;">
+                        <p:outputLabel for="telefone" value="Telefone:" style="margin-right: 5px;"/>
+                        <p:inputMask id="telefone" 
+                                     mask="(99) 99999-9999"  value="#{pacienteBean.pacienteSelecionado.telefone}" 
+                                     required="true" 
+                                     requiredMessage="O campo Telefone é obrigatório."/>
+                    </div>
+                    
+                    <div class="p-col-12 p-md-8 p-field" style="margin-bottom: 15px;">
+                        <p:outputLabel for="email" value="E-mail:" style="margin-right: 5px;"/>
+                        <p:inputText id="email" value="#{pacienteBean.pacienteSelecionado.email}" required="true" requiredMessage="O campo E-mail é obrigatório." maxlength="50"/>
+                    </div>
+                    
+                    <div class="p-col-12 p-md-4 p-field" style="margin-bottom: 15px;">
+                        <p:outputLabel for="cpf" value="CPF:" style="margin-right: 5px;"/>
+                        <p:inputMask id="cpf" mask="999.999.999-99" value="#{pacienteBean.pacienteSelecionado.cpf}" required="true" requiredMessage="O campo CPF é obrigatório.">
+                            <f:converter converterId="cpfConverter" />
+                        </p:inputMask>
+                    </div>
+                    
+                    <div class="p-col-12 p-md-4 p-field" style="margin-bottom: 15px;">
+					    <p:outputLabel for="sexo" value="Sexo:" style="margin-right: 5px;"/>
+					    <p:selectOneMenu id="sexo" 
+					                     value="#{pacienteBean.pacienteSelecionado.sexo}" 
+					                     required="true" 
+					                     requiredMessage="O campo Sexo é obrigatório.">
+					        
+					        <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+					        
+					        <f:selectItem itemLabel="Masculino" itemValue="false" />
+					        <f:selectItem itemLabel="Feminino" itemValue="true" />
+					    </p:selectOneMenu>
+					</div>
+                    
+                    <div class="p-col-12 p-md-4 p-field" style="margin-bottom: 15px;">
+                        <p:outputLabel for="rg" value="RG:" style="margin-right: 5px;"/>
+                        <p:inputText id="rg" value="#{pacienteBean.pacienteSelecionado.rg}" required="true" requiredMessage="O campo RG é obrigatório." maxlength="50"/>
+                    </div>
+                    
+                    <div class="p-col-12 p-md-6 p-field" style="margin-bottom: 15px;">
+                        <p:outputLabel for="cns" value="CNS:" style="margin-right: 5px;"/>
+                        <p:inputText id="cns" value="#{pacienteBean.pacienteSelecionado.cns}" required="true" requiredMessage="O campo CNS é obrigatório." maxlength="50"/>
+                    </div>
+                    
+                    <div class="p-col-12 p-md-6 p-field" style="margin-bottom: 15px;">
+                        <p:outputLabel for="dataNascimento" value="Data de Nascimento" style="margin-right: 5px;"/>
+                        <p:calendar id="dataNascimento" 
+                                    value="#{pacienteBean.pacienteSelecionado.dataNascimento}"
+                                    pattern="dd/MM/yyyy"
+                                    showOn="button"
+                                    mask="true"
+                                    locale="pt_BR"
+                                    required="true" 
+                                    requiredMessage="O campo Data de Nascimento é obrigatório."
+                                    maxdate="#{pacienteBean.maxDateTime}"
+                                    showButtonPanel="true">
+                        </p:calendar>
+                    </div>
+                    
+                </div>
+            </p:fieldset>
+            
+            <p:fieldset legend="Dados de Endereço" style="margin-top: 15px;">
+                <div class="p-grid">
+                                    
+					<div class="p-col-12 p-md-4 p-field" style="margin-bottom: 15px;">
+					    <p:outputLabel for="cep" value="CEP:" style="margin-right: 5px;"/>
+					    <p:inputMask id="cep" 
+					                 value="#{pacienteBean.pacienteSelecionado.endereco.cep}" 
+					                 mask="99.999-999" required="true" 
+					                 requiredMessage="O campo CEP é obrigatório."
+					                 converter="#{cepConverter}" >
+					    </p:inputMask>
+					</div>
+                    
+                    <div class="p-col-12 p-md-8 p-field" style="margin-bottom: 15px;">
+                        <p:outputLabel for="logradouro" value="Logradouro (Rua/Av):" style="margin-right: 5px;"/>
+                        <p:inputText id="logradouro" value="#{pacienteBean.pacienteSelecionado.endereco.logradouro}" required="true" requiredMessage="O campo Logradouro é obrigatório." maxlength="255"/>
+                    </div>
+                    
+                    <div class="p-col-12 p-md-3 p-field" style="margin-bottom: 15px;">
+                        <p:outputLabel for="numero" value="Número:" style="margin-right: 5px;"/>
+                        <p:inputText id="numero" value="#{pacienteBean.pacienteSelecionado.endereco.numero}" required="true" requiredMessage="O campo Número é obrigatório." maxlength="5"/>
+                    </div>
+                    
+                    <div class="p-col-12 p-md-5 p-field" style="margin-bottom: 15px;">
+                        <p:outputLabel for="bairro" value="Bairro:" style="margin-right: 5px;"/>
+                        <p:inputText id="bairro" value="#{pacienteBean.pacienteSelecionado.endereco.bairro}" required="true" requiredMessage="O campo Bairro é obrigatório." maxlength="50"/>
+                    </div>
+                    
+                    <div class="p-col-12 p-md-4 p-field" style="margin-bottom: 15px;">
+					    <p:outputLabel for="estadoSelect" value="Estado:" style="margin-right: 5px;"/>
+					    <p:selectOneMenu id="estadoSelect" 
+					                     value="#{pacienteBean.pacienteSelecionado.endereco.estadoSelecionado}" 
+					                     required="true" 
+					                     requiredMessage="O campo Estado é obrigatório."
+					                     converter="#{estadoConverter}"> 
+					        <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />					    
+					        <f:selectItems value="#{pacienteBean.estados}" var="e" itemLabel="#{e.uf}" itemValue="#{e}" />
+					
+					        <p:ajax event="valueChange" 
+					                listener="#{pacienteBean.carregarMunicipiosPorEstado}" 
+					                update="municipioSelect" 
+					                process="@this" />
+					    </p:selectOneMenu>
+					</div>
+			
+			        <div class="p-col-12 p-md-4 p-field" style="margin-bottom: 15px;">
+					    <p:outputLabel for="municipioSelect" value="Município:" style="margin-right: 5px;"/>
+					    <p:selectOneMenu id="municipioSelect" 
+					                     value="#{pacienteBean.pacienteSelecionado.endereco.municipio}" 
+					                     required="true" 
+					                     requiredMessage="O campo Município é obrigatório."
+					                     converter="#{municipioConverter}">
+					        <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+					        <f:selectItems value="#{pacienteBean.municipiosFiltrados}" var="m" itemLabel="#{m.nome}" itemValue="#{m}" />
+					    </p:selectOneMenu>
+					</div>
+                    
+                    <div class="p-col-12 p-field" style="margin-bottom: 15px;">
+                        <p:outputLabel for="complemento" value="Complemento:" style="margin-right: 5px;"/>
+                        <p:inputText id="complemento" value="#{pacienteBean.pacienteSelecionado.endereco.complemento}" required="true" requiredMessage="O campo Complemento é obrigatório." maxlength="255"/>
+                    </div>
+                    
+                    <div class="p-col-12 p-field" style="margin-bottom: 15px;">
+                        <p:outputLabel for="ponto_referencia" value="Ponto de Referência:" style="margin-right: 5px;"/>
+                        <p:inputTextarea id="ponto_referencia" value="#{pacienteBean.pacienteSelecionado.endereco.ponto_referencia}" rows="2" required="true" requiredMessage="O campo Ponto de Referência é obrigatório." maxlength="500"/>
+                    </div>
+                    
+                </div>
+            </p:fieldset>
+            
+            <div class="p-mt-4 p-d-flex p-jc-end" style="margin-top: 15px; padding: 5px;">
+                 <p:commandButton value="Salvar" 
+                            icon="pi pi-check" 
+                            action="#{pacienteBean.salvarPaciente}" 
+                            update=":formPrincipal:dtPacientes :formPrincipal:messages" 
+                            process="@form"
+                            oncomplete="if (!args.validationFailed) {PF('pacienteDialog').hide();}" />
+                 <p:commandButton value="Cancelar" 
+                                     icon="pi pi-times" 
+                                     onclick="PF('pacienteDialog').hide()" 
+                                     type="button"
+                                     style="margin-left: 10px;"
+                                     styleClass="ui-button-secondary"/>
+             </div>
+        </p:outputPanel>
+    </h:form>
+</p:dialog>
+    
+</h:body>
+</html>
