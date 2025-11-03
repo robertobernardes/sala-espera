@@ -49,7 +49,7 @@
 | Descrição                           	|                          								Endpoint |
 | :------------------------------------	|  ------------------------------------------------------------: |
 | Dashboard - Gestão de Agendamentos 	|     			   http://localhost:8087/sala-espera/index.xhtml |
-| Disponibilidade de Salas     | GET    |    http://localhost:8087/sala-espera/disponibilidadeSala.xhtml |
+| Disponibilidade de Salas              |    http://localhost:8087/sala-espera/disponibilidadeSala.xhtml |
 | Gerenciamento de Reserva das Salas   	|     		 http://localhost:8087/sala-espera/reservaSala.xhtml |
 | Gerenciamento de Pacientes            |  				http://localhost:8087/sala-espera/paciente.xhtml |
 | Gerenciamento de Usuários             |  				 http://localhost:8087/sala-espera/usuario.xhtml |
