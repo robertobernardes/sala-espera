@@ -1,4 +1,4 @@
-# Projeto Gestão de salas
+# Projeto Gestão de Salas
 
 #### **Sistema de Gerenciamento de Salas de Espera para Teleconsulta**
 
@@ -23,6 +23,40 @@
 - Maven » v3.9.11;
 - Apache Tomcat » V11.0.4;
 - Docker / Docker Compose;
+
+#### Estrutura de Pastas
+
+###### Este é o layout da aplicação Spring Boot/JSF (sala-espera):
+
+```
+sala-espera/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── br/gov/ba/sesab/sala_espera/
+│   │   │       ├── bean/          # Backing Beans (JSF)
+│   │   │       ├── converters/    # Conversores JSF (e.g., LocalDateTimeConverter)
+│   │   │       ├── domains/       # Entidades JPA (Modelos de domínio)
+│   │   │       ├── repositories/  # Spring Data JPA Repositories
+│   │   │       ├── services/      # Camada de Serviço (Regras de Negócio)
+│   │   │       └── GerenciamentoDeSalasDeEsperaApplication.java
+│   │   ├── resources/
+│   │   │   ├── application.properties # Configuração do DB (SQLite) e Spring
+│   │   │   └── data.sql               # Scripts de inicialização de dados
+│   │   └── webapp/
+│   │       ├── WEB-INF/
+│   │       ├── disponibilidadeSala.xhtml
+│   │       ├── index.xhtml
+│   │       ├── paciente.xhtml
+│   │       ├── reservaSala.xhtml
+│   │       ├── sala.xhtml
+│   │       ├── unidadeSaude.xhtml
+│   │       └── usuario.xhtml
+│   └── test/
+├── pom.xml                      # Dependências Maven
+└── ... (Arquivos de Build e Docker)
+
+```
 
 
 
