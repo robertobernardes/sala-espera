@@ -43,10 +43,11 @@ public class ReservaSalaBean implements Serializable {
     		
     @PostConstruct
     public void init() {
-        this.reservaSalas = reservaSalaService.buscarTodos();    	
+    	this.reservaSalas = reservaSalaService.buscarTodos();
+    	arquivarReservasExpiradas();
         this.salasDisponiveis = salaService.buscarTodos();
         this.usuariosDisponiveis = usuarioService.buscarTodos();
-        this.reservaSalaSelecionada = new ReservaSala();
+        this.reservaSalaSelecionada = new ReservaSala();        
     }
     
     public void carregarReservaSalas() {
@@ -91,6 +92,22 @@ public class ReservaSalaBean implements Serializable {
             PrimeFaces.current().ajax().update("formPrincipal:messages");
             PrimeFaces.current().executeScript("PF('messages').show({severity:'error', summary:'Erro', detail:'Erro ao salvar: " + e.getMessage() + "'})");
         }
+    }
+    //Arquivando as Reservas das Salas fora do prazo
+    public void arquivarReservasExpiradas() {
+	    List<Integer> idsParaArquivar = new ArrayList<>();
+	    for (ReservaSala item : this.reservaSalas) {	    	
+	    	if (item.getDataFinal() != null && item.getDataFinal().isBefore(LocalDateTime.now()) && 
+	    			item.getStatus() != StatusEnum.ARQUIVADA.getCodigo()) {
+	    		
+	    		if (!idsParaArquivar.contains(item.getId())) {
+	    			idsParaArquivar.add(item.getId());
+	    			item.setStatus(StatusEnum.ARQUIVADA.getCodigo());
+	 	       	}
+	        }
+	    }
+	    if (!idsParaArquivar.isEmpty())
+	    	reservaSalaService.arquivarReservaSala(idsParaArquivar);
     }
         
     public void excluirReservaSala() {

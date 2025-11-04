@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import br.gov.ba.sesab.sala_espera.domains.ReservaSala;
 import br.gov.ba.sesab.sala_espera.domains.Sala;
 import br.gov.ba.sesab.sala_espera.domains.Usuario;
+import br.gov.ba.sesab.sala_espera.domains.Enums.StatusEnum;
 import br.gov.ba.sesab.sala_espera.repositories.ReservaSalaRepository;
 
 @Service
@@ -50,5 +51,9 @@ public class ReservaSalaService {
     
     public List<ReservaSala> findBySala(Sala sala) {
     	return reservaSalaRepository.findBySala(sala);
+    }
+    
+    public void arquivarReservaSala(List<Integer> idsReservaSalaString) {
+    	reservaSalaRepository.arquivarReservaSala(StatusEnum.ARQUIVADA.getCodigo(), idsReservaSalaString);
     }
 }

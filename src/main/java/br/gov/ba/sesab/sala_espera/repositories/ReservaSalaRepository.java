@@ -51,4 +51,9 @@ public interface ReservaSalaRepository extends JpaRepository<ReservaSala, Intege
     
     List<ReservaSala> findByUsuario(Usuario usuario);
     List<ReservaSala> findBySala(Sala sala);
+    
+    @Transactional
+	@Modifying
+    @Query("UPDATE #{#entityName} e SET e.status = ?1 WHERE e.id IN (?2)")
+    void arquivarReservaSala(Integer idStatus, List<Integer> idsReservaSalaString);
 }
