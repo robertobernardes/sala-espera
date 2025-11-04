@@ -42,14 +42,14 @@ public class PacienteBean implements Serializable {
     
     @PostConstruct
     public void init() {
-        this.pacientes = pacienteService.buscarTodos();
+        this.pacientes = pacienteService.buscarTodosByCriteria();
         this.carregarEstados();
         this.municipiosFiltrados = new ArrayList<>();
         this.pacienteSelecionado = new Paciente();
     }
     
     public void carregarPacientes() {
-        this.pacientes = pacienteService.buscarTodos();
+        this.pacientes = pacienteService.buscarTodosByCriteria();
     }
     
     public void carregarEstados() {

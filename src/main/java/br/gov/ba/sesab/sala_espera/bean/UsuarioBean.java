@@ -109,7 +109,6 @@ public class UsuarioBean implements Serializable {
 	        String filtroLimpo = filtro.replaceAll("[^0-9]", ""); 
 
 	        // Compara o CPF limpo com o valor limpo do filtro
-	        // O toUpperCase(locale) não é estritamente necessário para números, mas é bom para consistência.
 	        return cpfLimpo.contains(filtroLimpo);
 	    }
 
