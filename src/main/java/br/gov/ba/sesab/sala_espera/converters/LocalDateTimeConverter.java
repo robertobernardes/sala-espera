@@ -8,7 +8,6 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.convert.Converter;
 import jakarta.faces.convert.FacesConverter;
 
-//Registra o conversor para todos os campos LocalDateTime
 @FacesConverter(forClass = LocalDateTime.class)
 public class LocalDateTimeConverter implements Converter<LocalDateTime> {
 	

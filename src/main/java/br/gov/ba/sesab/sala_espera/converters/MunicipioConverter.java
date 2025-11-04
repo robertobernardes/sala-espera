@@ -14,7 +14,6 @@ import jakarta.faces.convert.FacesConverter;
 @FacesConverter(value = "municipioConverter")
 public class MunicipioConverter implements Converter<Municipio> {
 
-    // 2. O @Autowired agora funcionará, pois o Spring está criando esta instância
     @Autowired
     private MunicipioService municipioService;
 

@@ -42,11 +42,9 @@ public class CnpjConverter implements Converter<Object> {
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         if (value == null) {
             return null;
-        }
-        
+        }        
         // Remove todos os caracteres não numéricos (pontos, traços, barras)
         String cnpjSomenteNumeros = value.replaceAll("[^0-9]", "");
-        
         return cnpjSomenteNumeros;
     }
 }
