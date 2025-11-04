@@ -13,3 +13,5 @@ services:
     
     environment:
       - JAVA_OPTS=-Xmx512m
+      - JAVA_TOOL_OPTIONS=-Duser.language=pt -Duser.country=BR -Dfile.encoding=UTF-8
+      - TZ=America/Bahia
