@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -91,7 +92,7 @@ public class ReservaSalaBean implements Serializable {
             PrimeFaces.current().executeScript("PF('messages').show({severity:'error', summary:'Erro', detail:'Erro ao salvar: " + e.getMessage() + "'})");
         }
     }
-    
+        
     public void excluirReservaSala() {
         if (reservaSalaSelecionada != null) {
             reservaSalaService.deletar(reservaSalaSelecionada.getId());
@@ -121,12 +122,10 @@ public class ReservaSalaBean implements Serializable {
     
     public void novaReservaSalaDialog() {
         this.reservaSalaSelecionada = new ReservaSala();
-        // Não precisa mais do script, o oncomplete do botão já faz isso
     }
     
     public void prepararEdicao(ReservaSala reservaSala) {
         this.reservaSalaSelecionada = reservaSala;
-        // Não precisa mais do script, o oncomplete do botão já faz isso
     }
     
     /**
