@@ -193,7 +193,6 @@ public class ReservaSalaBean implements Serializable {
 
         return Date.from(rawLimit.atZone(ZoneId.systemDefault()).toInstant());
     }
-
     
     /**
      * Retorna o limite mínimo de data e hora permitido (o momento atual menos 5 segundos de buffer).

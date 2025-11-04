@@ -36,6 +36,7 @@
 	                               itemValue="#{u}" />
 	            </p:selectOneMenu>
 	            
+	            <!-- 
 	            <p:outputLabel for="dataInicio" value="Início:"/>
 	            <p:calendar id="dataInicio" 
 	                        value="#{disponibilidadeSalaBean.dataInicioFiltro}"
@@ -45,6 +46,39 @@
 	            <p:calendar id="dataFim" 
 	                        value="#{disponibilidadeSalaBean.dataFimFiltro}"
 	                        pattern="dd/MM/yyyy HH:mm" timeInput="true" required="true" showButtonPanel="true"/>
+	             -->            
+             	<p:outputLabel for="dataInicio" value="Data e Hora de Início:" style="margin-right: 5px;"/>
+				<p:calendar id="dataInicio" 
+				            value="#{disponibilidadeSalaBean.dataInicioFiltro}"
+				            pattern="dd/MM/yyyy HH:mm"
+				            showOn="button"
+				            mask="true"
+				            locale="pt_BR"
+				            timeInput="true"
+				            required="true" 
+				            requiredMessage="O campo Data de Início é obrigatório."
+				            mindate="#{disponibilidadeSalaBean.minDateTime}"
+				            maxdate="#{disponibilidadeSalaBean.getDataFinalAsDateWithDelta()}"
+				            showButtonPanel="true">
+				    <p:ajax event="dateSelect" update="dataFim" listener="#{disponibilidadeSalaBean.ajustarDataFinal}" />
+				    <p:ajax event="change" update="dataFim" listener="#{disponibilidadeSalaBean.ajustarDataFinal}" />
+				</p:calendar>
+				
+				<p:outputLabel for="dataFim" value="Data e Hora do Fim:" style="margin-right: 5px;"/>
+				<p:calendar id="dataFim" 
+				            value="#{disponibilidadeSalaBean.dataFimFiltro}"
+				            pattern="dd/MM/yyyy HH:mm"
+				            showOn="button"
+				            mask="true"
+				            locale="pt_BR"
+				            timeInput="true"
+				            required="true" 
+				            requiredMessage="O campo Data do Fim é obrigatório."
+				            mindate="#{disponibilidadeSalaBean.getDataInicioAsDate()}"
+				            showButtonPanel="true">
+				    <p:ajax event="dateSelect" update="dataInicio" />
+				    <p:ajax event="change" update="dataInicio" />
+				</p:calendar>        
 	            
 	            <p:commandButton value="Consultar" 
 	                             action="#{disponibilidadeSalaBean.consultarDisponibilidade}" 
