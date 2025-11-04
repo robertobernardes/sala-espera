@@ -171,11 +171,9 @@ public class ReservaSalaBean implements Serializable {
     }
 
     /**
-     * Converte dataFinal (LocalDateTime) para Date, adicionando 1 segundo (delta).
-     * GARANTE que o valor retornado seja sempre maior que o MinDateTime global para 
-     * satisfazer a validação mindate < maxdate do p:calendar dataInicio.
+     * Converte dataFinal (LocalDateTime) para Date, adicionando 1 segundo
      */
-    public Date getDataFinalAsDateWithDelta() {
+    public Date getDataFinalAdicionaTempo() {
         LocalDateTime fim = reservaSalaSelecionada.getDataFinal();
         
         LocalDateTime rawLimit;

@@ -170,7 +170,7 @@
 					                required="true" 
 					                requiredMessage="O campo Data de Início é obrigatório."
 					                mindate="#{reservaSalaBean.minDateTime}"
-					                maxdate="#{reservaSalaBean.getDataFinalAsDateWithDelta()}"
+					                maxdate="#{reservaSalaBean.getDataFinalAdicionaTempo()}"
 					                showButtonPanel="true">
 					        <p:ajax event="dateSelect" update="dataFinal" listener="#{reservaSalaBean.ajustarDataFinal}" />
 					        <p:ajax event="change" update="dataFinal" listener="#{reservaSalaBean.ajustarDataFinal}" />

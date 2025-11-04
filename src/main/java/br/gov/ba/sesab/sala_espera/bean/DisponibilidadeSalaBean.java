@@ -43,9 +43,8 @@ public class DisponibilidadeSalaBean implements Serializable {
     public void init() {
         todasUnidades = unidadeSaudeService.buscarTodos();
         // Inicializa as datas com o período atual como padrão
-        dataInicioFiltro = null; //LocalDateTime.now();
-        dataFimFiltro = null; //LocalDateTime.now().plusHours(1);
-        
+        dataInicioFiltro = null;
+        dataFimFiltro = null;
     }
     
     public void consultarDisponibilidade() {
@@ -81,7 +80,10 @@ public class DisponibilidadeSalaBean implements Serializable {
         return Date.from(LocalDateTime.now().minusSeconds(5).atZone(ZoneId.systemDefault()).toInstant());
     }
     
-    public Date getDataFinalAsDateWithDelta() {
+    /**
+     * Converte dataFinal (LocalDateTime) para Date, adicionando 1 segundo
+     */
+    public Date getDataFinalAdicionaTempo() {
         LocalDateTime fim = getDataFimFiltro();
         
         LocalDateTime rawLimit;

@@ -35,18 +35,7 @@
 	                               itemLabel="#{u.nome}" 
 	                               itemValue="#{u}" />
 	            </p:selectOneMenu>
-	            
-	            <!-- 
-	            <p:outputLabel for="dataInicio" value="Início:"/>
-	            <p:calendar id="dataInicio" 
-	                        value="#{disponibilidadeSalaBean.dataInicioFiltro}"
-	                        pattern="dd/MM/yyyy HH:mm" timeInput="true" required="true" showButtonPanel="true"/>
-	            
-	            <p:outputLabel for="dataFim" value="Fim:"/>
-	            <p:calendar id="dataFim" 
-	                        value="#{disponibilidadeSalaBean.dataFimFiltro}"
-	                        pattern="dd/MM/yyyy HH:mm" timeInput="true" required="true" showButtonPanel="true"/>
-	             -->            
+	                
              	<p:outputLabel for="dataInicio" value="Data e Hora de Início:" style="margin-right: 5px;"/>
 				<p:calendar id="dataInicio" 
 				            value="#{disponibilidadeSalaBean.dataInicioFiltro}"
@@ -58,7 +47,7 @@
 				            required="true" 
 				            requiredMessage="O campo Data de Início é obrigatório."
 				            mindate="#{disponibilidadeSalaBean.minDateTime}"
-				            maxdate="#{disponibilidadeSalaBean.getDataFinalAsDateWithDelta()}"
+				            maxdate="#{disponibilidadeSalaBean.getDataFinalAdicionaTempo()}"
 				            showButtonPanel="true">
 				    <p:ajax event="dateSelect" update="dataFim" listener="#{disponibilidadeSalaBean.ajustarDataFinal}" />
 				    <p:ajax event="change" update="dataFim" listener="#{disponibilidadeSalaBean.ajustarDataFinal}" />
